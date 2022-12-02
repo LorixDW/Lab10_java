@@ -16,6 +16,8 @@ public class Main {
         Query3(statement, "Каратаева", "Ева", "Адамовна");
         System.out.println("\nЧетвёртый запрос:");
         Query4(statement);
+        System.out.println("\nПятый запрос:");
+        Query5(statement);
     }
     public static void Query1(Statement statement, String subject) throws SQLException {
         ResultSet rs = statement.executeQuery("select s.last_name, s.first_name, s.patronimic, p.mark \n" +
@@ -43,6 +45,20 @@ public class Main {
                 "group by sub.name\n" +
                 "order by count(*) desc\n" +
                 "limit 3;\n");
+        RSprint(rs);
+    }
+    public static void Query5(Statement statement) throws SQLException {
+        ResultSet rs = statement.executeQuery("select s.last_name, s.first_name, s.patronimic, sb.name, p.mark\n" +
+                "from education.student s  join education.performance p on (s.student_id = p.student_id)\n" +
+                "join education.subject sb on (p.subject_id = sb.subject_id)\n" +
+                "where p.student_id in (\n" +
+                "    select s.student_id from education.student s\n" +
+                "        join education.performance p on (s.student_id = p.student_id)\n" +
+                "    where p.mark > 3\n" +
+                "    GROUP BY s.student_id\n" +
+                "    having count(*) = (select count(*) from education.subject)\n" +
+                "    )\n" +
+                "limit 3 offset 1;");
         RSprint(rs);
     }
     public static void RSprint(ResultSet rs) throws SQLException {
